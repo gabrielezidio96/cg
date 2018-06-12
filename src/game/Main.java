@@ -28,9 +28,10 @@ public class Main extends SimpleApplication implements ActionListener, PhysicsCo
     private Bomber bomber1;
     private boolean up = false, down = false, left = false, right = false;
     private boolean up1 = false, down1 = false, left1 = false, right1 = false;
+    private boolean bomb = false;
     private BulletAppState state;
     private Node ducks = new Node();
-    private int totalDucks = 0, totalItens=0;
+    //private int totalDucks = 0, totalItens=0;
     private Node dests = new Node();
             
     //0 -> Livre\
@@ -40,14 +41,14 @@ public class Main extends SimpleApplication implements ActionListener, PhysicsCo
     //4 -> Bomber1
     int mat[][] = {
         {1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-        {1, 3, 5, 2, 2, 2, 2, 2, 2, 1},
+        {1, 4, 5, 2, 2, 2, 2, 2, 2, 1},
         {1, 5, 1, 2, 2, 2, 2, 1, 2, 1},
         {1, 2, 2, 1, 2, 2, 1, 2, 2, 1},
         {1, 2, 2, 2, 2, 2, 2, 2, 2, 1},
         {1, 2, 2, 2, 2, 2, 2, 2, 2, 1},
         {1, 2, 2, 1, 2, 2, 1, 2, 2, 1},
         {1, 2, 1, 2, 2, 2, 2, 1, 5, 1},
-        {1, 2, 2, 2, 2, 2, 2, 5, 4, 1},
+        {1, 2, 2, 2, 2, 2, 2, 5, 3, 1},
         {1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
     };
 
@@ -183,20 +184,19 @@ public class Main extends SimpleApplication implements ActionListener, PhysicsCo
                 }
                 break;
         }
-
     }
 
     private void createPlayer(Vector3f posicao, Vector3f posicao1) {
         if(posicao != null)            
         {
             bomber = new Bomber("bomber", assetManager, state,posicao);
+            Quaternion ROLL180  = new Quaternion().fromAngleAxis(FastMath.PI  ,   new Vector3f(1,0,0));
+            bomber.rotate(ROLL180);
             rootNode.attachChild(bomber);
         }
         if(posicao1 != null)
         {
             bomber1 = new Bomber("bomber1", assetManager, state,posicao1);
-            Quaternion ROLL180  = new Quaternion().fromAngleAxis(FastMath.PI  ,   new Vector3f(1,0,0));
-            bomber1.rotate(ROLL180);
             rootNode.attachChild(bomber1);
 
         }
@@ -214,6 +214,7 @@ public class Main extends SimpleApplication implements ActionListener, PhysicsCo
         inputManager.addMapping("CharRight", new KeyTrigger(KeyInput.KEY_D));
         inputManager.addMapping("CharForward", new KeyTrigger(KeyInput.KEY_W));
         inputManager.addMapping("CharBackward", new KeyTrigger(KeyInput.KEY_S));
+        inputManager.addMapping("Bomb", new KeyTrigger(KeyInput.KEY_TAB));
 
         inputManager.addListener(this, "CharLeft", "CharRight");
         inputManager.addListener(this, "CharForward", "CharBackward");
@@ -222,6 +223,7 @@ public class Main extends SimpleApplication implements ActionListener, PhysicsCo
         inputManager.addMapping("Char1Right", new KeyTrigger(KeyInput.KEY_RIGHT));
         inputManager.addMapping("Char1Forward", new KeyTrigger(KeyInput.KEY_UP));
         inputManager.addMapping("Char1Backward", new KeyTrigger(KeyInput.KEY_DOWN));
+        inputManager.addMapping("Bomb", new KeyTrigger(KeyInput.KEY_SPACE));
 
         inputManager.addListener(this, "Char1Left", "Char1Right");
         inputManager.addListener(this, "Char1Forward", "Char1Backward");
@@ -281,18 +283,18 @@ public class Main extends SimpleApplication implements ActionListener, PhysicsCo
 
     }
 
-    private void createDuck(Vector3f posicao) {
-        Spatial duck = assetManager.loadModel("Models/fuck/Duck.gltf");
-        duck.setName("duck");
-        duck.setLocalTranslation(posicao);
-        Material defaultMat = new Material( assetManager, "Common/MatDefs/Misc/ShowNormals.j3md");
-        duck.setMaterial(defaultMat);
-        ducks.attachChild(duck);
-        
-        RigidBodyControl r = new RigidBodyControl(0);
-        duck.addControl(r);
-        state.getPhysicsSpace().add(r);
-    }
+//    private void createDuck(Vector3f posicao) {
+//        Spatial duck = assetManager.loadModel("Models/fuck/Duck.gltf");
+//        duck.setName("duck");
+//        duck.setLocalTranslation(posicao);
+//        Material defaultMat = new Material( assetManager, "Common/MatDefs/Misc/ShowNormals.j3md");
+//        duck.setMaterial(defaultMat);
+//        ducks.attachChild(duck);
+//        
+//        RigidBodyControl r = new RigidBodyControl(0);
+//        duck.addControl(r);
+//        state.getPhysicsSpace().add(r);
+//    }
     @Override
     public void collision(PhysicsCollisionEvent event) {
         Spatial nodeA = event.getNodeA();
@@ -303,7 +305,7 @@ public class Main extends SimpleApplication implements ActionListener, PhysicsCo
             if(ducks.getChildIndex(nodeA) != -1){
              state.getPhysicsSpace().remove(nodeA);
              ducks.detachChild(nodeA);
-             totalItens++;
+             //totalItens++;
             
             }
         }
@@ -312,7 +314,7 @@ public class Main extends SimpleApplication implements ActionListener, PhysicsCo
                 if(ducks.getChildIndex(nodeB) != -1){
                 state.getPhysicsSpace().remove(nodeB);
                 ducks.detachChild(nodeB);
-                totalItens++;
+                //totalItens++;
                 }
             }
         }

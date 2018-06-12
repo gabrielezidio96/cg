@@ -42,7 +42,6 @@ public class Bomber extends Node{
 
         animationControl = oto.getControl(AnimControl.class);
         animationChannel = animationControl.createChannel();
-
     }
 
     public Vector3f getWalkDirection() {
