@@ -25,7 +25,9 @@ import com.jme3.scene.Node;
 public class Main extends SimpleApplication implements ActionListener, PhysicsCollisionListener{
 
     private Bomber bomber;
+    private Bomber bomber1;
     private boolean up = false, down = false, left = false, right = false;
+    private boolean up1 = false, down1 = false, left1 = false, right1 = false;
     private BulletAppState state;
     private Node ducks = new Node();
     private int totalDucks = 0, totalItens=0;
@@ -35,7 +37,7 @@ public class Main extends SimpleApplication implements ActionListener, PhysicsCo
     //1 -> Bloco com corpo rígido
     //2 -> Bloco destrutivel
     //3 -> Bomber
-    //4 -> Bomber2
+    //4 -> Bomber1
     int mat[][] = {
         {1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
         {1, 3, 5, 2, 2, 2, 2, 2, 2, 1},
@@ -73,6 +75,7 @@ public class Main extends SimpleApplication implements ActionListener, PhysicsCo
     @Override
     public void simpleUpdate(float tpf) {
         bomber.upDateKeys(tpf, up, down, left, right);
+        bomber1.upDateKeys(tpf, up1, down1, left1, right1);
         
         for(Spatial d : ducks.getChildren())
             d.rotate(0, tpf, 0);
@@ -147,12 +150,56 @@ public class Main extends SimpleApplication implements ActionListener, PhysicsCo
                 }
                 break;
         }
+        
+        switch (binding) {
+            case "Char1Left":
+                if (value) {
+                    left1 = true;
+                } else {
+                    left1 = false;
+                }
+                break;
+            case "Char1Right":
+                if (value) {
+                    right1 = true;
+                } else {
+                    right1 = false;
+                }
+                break;
+        }
+        switch (binding) {
+            case "Char1Forward":
+                if (value) {
+                    up1 = true;
+                } else {
+                    up1 = false;
+                }
+                break;
+            case "Char1Backward":
+                if (value) {
+                    down1= true;
+                } else {
+                    down1 = false;
+                }
+                break;
+        }
 
     }
 
-    private void createPlayer(Vector3f posicao) {
-        bomber = new Bomber("bomber", assetManager, state,posicao);
-        rootNode.attachChild(bomber);
+    private void createPlayer(Vector3f posicao, Vector3f posicao1) {
+        if(posicao != null)            
+        {
+            bomber = new Bomber("bomber", assetManager, state,posicao);
+            rootNode.attachChild(bomber);
+        }
+        if(posicao1 != null)
+        {
+            bomber1 = new Bomber("bomber1", assetManager, state,posicao1);
+            Quaternion ROLL180  = new Quaternion().fromAngleAxis(FastMath.PI  ,   new Vector3f(1,0,0));
+            bomber1.rotate(ROLL180);
+            rootNode.attachChild(bomber1);
+
+        }
         flyCam.setEnabled(false);
     }
 
@@ -170,7 +217,14 @@ public class Main extends SimpleApplication implements ActionListener, PhysicsCo
 
         inputManager.addListener(this, "CharLeft", "CharRight");
         inputManager.addListener(this, "CharForward", "CharBackward");
+        
+        inputManager.addMapping("Char1Left", new KeyTrigger(KeyInput.KEY_LEFT));
+        inputManager.addMapping("Char1Right", new KeyTrigger(KeyInput.KEY_RIGHT));
+        inputManager.addMapping("Char1Forward", new KeyTrigger(KeyInput.KEY_UP));
+        inputManager.addMapping("Char1Backward", new KeyTrigger(KeyInput.KEY_DOWN));
 
+        inputManager.addListener(this, "Char1Left", "Char1Right");
+        inputManager.addListener(this, "Char1Forward", "Char1Backward");
     }
 
     private void criarParede() {
@@ -215,11 +269,11 @@ public class Main extends SimpleApplication implements ActionListener, PhysicsCo
                         state.getPhysicsSpace().add(r2);
                     }
                     if(mat[i][j]==3){
-                       createPlayer(new Vector3f(-9+i*2,1,-9+j*2));
+                       createPlayer(new Vector3f(-9+i*2,1,-9+j*2),null);
                     }
-                   //if(mat[i][j]==4){
-                   //    createPlayer2(new Vector3f(-9+i*2,1,-9+j*2));
-                   // }
+                    if(mat[i][j]==4){
+                        createPlayer(null,new Vector3f(-9+i*2,1,-9+j*2));
+                     }
                 }
             }
         }
